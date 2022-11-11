@@ -1,4 +1,6 @@
+import os
 import re
+from gtts import gTTS
 from api.models import *
 
 def preprocess_data(datas):
@@ -13,7 +15,7 @@ def make_project_savepoint_obj():
     )
     SavePoint.objects.create(
         project=project,
-        savepoint=f"./savepoint/{project.id}{project.project_title}/"    
+        savepoint=f"../savepoint/{project.project_title}{project.id}/"    
     )
     return project.id
     
@@ -31,3 +33,11 @@ def make_audio_obj(project_id):
             savepoint=SavePoint.objects.get(project=Project.objects.get(id=project_id)),
             index=k
         )
+
+def create_text_to_audio(project_id):
+    audio_list = Audio.objects.filter(text__project__id=project_id)
+    path=audio_list[0].savepoint.savepoint
+    os.makedirs(path)
+    for audio in audio_list:
+        real_audio = gTTS(text=audio.text.text, lang="ko", slow=audio.speed)
+        real_audio.save(path+f"{audio.id}.mp3")
