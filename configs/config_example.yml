@@ -1,0 +1,17 @@
+databases:
+  host: "host url"
+  port: 3306
+  database: "db name"
+  username: "username"
+  password: "passwd"
+  timezone: "+09:00"
+
+secrets:
+  django: "django-something-something"
+
+key:
+  apikey: 'OpenAPI Key'  
+
+slack:
+  botkey: 'Slack Bot Key'
+  channel_name : '#channel name'
