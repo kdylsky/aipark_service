@@ -21,6 +21,7 @@ class Text(models.Model):
     )
     text = models.TextField()
     updated_time = models.DateTimeField(auto_now=True)
+    index = models.IntegerField()
 
     class Meta:
         db_table = "texts"
@@ -54,8 +55,7 @@ class Audio(models.Model):
         on_delete=models.CASCADE
     )
     speed = models.BooleanField(default=False)
-    index = models.IntegerField()
-
+    
     class Meta:
         db_table = "audios"
         abstract = False

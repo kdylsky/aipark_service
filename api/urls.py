@@ -3,4 +3,5 @@ from api.views import AiParkAPI
 
 urlpatterns = [
     path('/test', AiParkAPI.as_view()),
+    path('/test/<str:project_id>', AiParkAPI.as_view()),
 ]

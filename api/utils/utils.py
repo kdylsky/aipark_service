@@ -20,18 +20,18 @@ def make_project_savepoint_obj():
     return project.id
     
 def make_text_obj(project_id, complete_preprocess):
-    for i in complete_preprocess:
+    for i,j in enumerate(complete_preprocess,1):
         Text.objects.create(
             project=Project.objects.get(id=project_id),
-            text=i
+            text=j,
+            index=i
         )
 
 def make_audio_obj(project_id):
-    for k, j in enumerate(Text.objects.filter(project=Project.objects.get(id=project_id)).all(),1):
+    for j in Text.objects.filter(project=Project.objects.get(id=project_id)):
         Audio.objects.create(
             text=j,
-            savepoint=SavePoint.objects.get(project=Project.objects.get(id=project_id)),
-            index=k
+            savepoint=SavePoint.objects.get(project=Project.objects.get(id=project_id))
         )
 
 def create_text_to_audio(project_id):
