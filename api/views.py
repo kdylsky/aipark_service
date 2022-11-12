@@ -8,7 +8,7 @@ from api.utils.utils import preprocess_data, make_project_obj, make_text_obj,  c
 from django.db import transaction
 from api.service import AiParkService
 from rest_framework.generics import GenericAPIView
-from rest_framework.mixins import UpdateModelMixin
+from rest_framework.mixins import UpdateModelMixin, DestroyModelMixin
 
 aipark_service = AiParkService()
 
@@ -18,6 +18,9 @@ class AiParkView(APIView):
 
     def get(self, request, *args, **kwargs):
         return get_list(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return delete_project(request, *args, **kwargs)
 
 class TextUpdateView(GenericAPIView, UpdateModelMixin):
     def put(self, request, *args, **kwargs):
@@ -54,4 +57,13 @@ def partial_update(request, *args, **kwargs):
     kwargs['partial'] = True
     partial = kwargs.pop('partial', False)
     return JsonResponse(aipark_service.update(data, project_id, text_id, partial), status=status.HTTP_200_OK)
+
+
+@execption_hanlder()
+@parser_classes([JSONParser])
+def delete_project(request, *args, **kwargs):
+    project_id = kwargs["project_id"]
+    return JsonResponse(aipark_service.delete(project_id), status=status.HTTP_204_NO_CONTENT, safe=False)
+
+
 

@@ -25,15 +25,21 @@ class AiParkService:
     def update(self, data, project_id, text_id, partial):
         try:
             instance = Text.objects.get(project_id=project_id, id=text_id)
-            serializer = TextModelSerializer(instance, data=data, partial=partial)
-            
+            serializer = TextModelSerializer(instance, data=data, partial=partial) 
             serializer.is_valid(raise_exception=True)
-            self.perform_update(serializer)
+            self._perform_update(serializer)
             if getattr(instance, '_prefetched_objects_cache', None):
                 instance._prefetched_objects_cache = {}
             return serializer.data
         except Text.DoesNotExist:
             raise NotFoundObject()
 
-    def perform_update(self, serializer):
+    def _perform_update(self, serializer):
         serializer.save()
+
+    def delete(self, project_id):
+        try:
+            instance = Project.objects.get(id=project_id)
+            return instance.delete()
+        except Project.DoesNotExist:
+            raise NotFoundObject()    
