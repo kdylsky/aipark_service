@@ -2,8 +2,19 @@ from api.models import Project, Text
 from api.serializers import TextModelSerializer
 from api.exceptions import NotFoundObject
 from math import ceil
+from api.utils.utils import preprocess_data, make_project_obj, make_text_obj,  create_text_to_audio
+from django.db import transaction
+
 
 class AiParkService:
+    @transaction.atomic()
+    def create(self, datas):
+        complete_preprocess = preprocess_data(datas["data"])
+        project_id = make_project_obj()
+        make_text_obj(project_id,complete_preprocess)
+        result = create_text_to_audio(project_id) 
+        return result
+
     def get_list(self, project_id, page):
         try:
             page_size = 10
@@ -22,12 +33,13 @@ class AiParkService:
         except Project.DoesNotExist:
             raise NotFoundObject()
     
-    def update(self, data, project_id, text_id, partial):
+    def update(self, data, project_id, index, partial):
         try:
-            instance = Text.objects.get(project_id=project_id, id=text_id)
+            instance = Text.objects.get(project_id=project_id, index=index)
             serializer = TextModelSerializer(instance, data=data, partial=partial) 
             serializer.is_valid(raise_exception=True)
             self._perform_update(serializer)
+            create_text_to_audio(project_id)
             if getattr(instance, '_prefetched_objects_cache', None):
                 instance._prefetched_objects_cache = {}
             return serializer.data
