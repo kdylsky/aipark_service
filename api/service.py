@@ -22,7 +22,7 @@ class AiParkService:
             offset = limit - page_size
             obj = Project.objects.get(id=project_id)
             cnt = obj.text_set.count()
-            page_text = obj.text_set.all()[offset:limit]
+            page_text = obj.text_set.all().order_by("index")[offset:limit]
             serailizer = TextModelSerializer(instance=page_text, many=True)
             page_count = ceil(cnt / page_size)
             context = [{
@@ -54,4 +54,17 @@ class AiParkService:
             instance = Project.objects.get(id=project_id)
             return instance.delete()
         except Project.DoesNotExist:
-            raise NotFoundObject()    
+            raise NotFoundObject()
+
+    def add_create(self, project_id, datas, index):    
+        if index == None:
+            index = Text.objects.filter(project_id=project_id).count() + 1 
+        complete_preprocess = preprocess_data(datas["data"])
+        cnt = len(complete_preprocess)        
+        texts = Text.objects.filter(project_id=project_id, index__gte=index)
+        for text in texts:
+            text.index+=cnt
+            text.save()
+        make_text_obj(project_id, complete_preprocess, int(index))
+        result = create_text_to_audio(project_id) 
+        return result

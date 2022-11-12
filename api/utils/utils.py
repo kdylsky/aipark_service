@@ -20,8 +20,8 @@ def make_project_obj():
     project.save()
     return project.id
     
-def make_text_obj(project_id, complete_preprocess):
-    for i,j in enumerate(complete_preprocess,1):
+def make_text_obj(project_id, complete_preprocess, cnt: int = 1):
+    for i,j in enumerate(complete_preprocess, cnt):
         Text.objects.create(
             project=Project.objects.get(id=project_id),
             text=j,

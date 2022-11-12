@@ -20,6 +20,9 @@ class AiParkView(APIView):
     def delete(self, request, *args, **kwargs):
         return delete_project(request, *args, **kwargs)
 
+    def patch(self, request, *args, **kwargs):
+        return create_text(request, *args, **kwargs)
+
 class TextUpdateView(GenericAPIView, UpdateModelMixin):
     def put(self, request, *args, **kwargs):
         return partial_update(request, *args, **kwargs)
@@ -53,3 +56,12 @@ def partial_update(request, *args, **kwargs):
 def delete_project(request, *args, **kwargs):
     project_id = kwargs["project_id"]
     return JsonResponse(aipark_service.delete(project_id), status=status.HTTP_204_NO_CONTENT, safe=False)
+
+@execption_hanlder()
+@parser_classes([JSONParser])
+def create_text(request, *args, **kwargs):
+    project_id = kwargs["project_id"]
+    index = request.GET.get("index", None)
+    datas = request.data
+    return JsonResponse(aipark_service.add_create(project_id, datas, index), safe=False)
+
