@@ -11,17 +11,13 @@ signup_service = SignService()
 login_service = LoginService()
 
 class SingUpAPI(APIView):
-    """
-    회원가입 API
-    """
+    """ 회원가입 API """
     def post(self,request):
         return signup(request)
 
 
 class LoginAPI(APIView):
-    """
-    로그인 API
-    """
+    """ 로그인 API """
     def post(self, request):
         return login(request)
 

@@ -15,7 +15,7 @@ def login_decorator():
                 access_token = request.headers.get('Authorization', None)                
                 if access_token == None: 
                     raise NotAuthorizedError()
-                payload = jwt.decode(access_token, auth_provider.key, algorithms=["HS256"])                
+                payload      = jwt.decode(access_token, auth_provider.key, algorithms=["HS256"])                
                 user         = User.objects.get(id = payload['id'])
                 request.user = user
                 return api_func(request, *args, **kwargs)

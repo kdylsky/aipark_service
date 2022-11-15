@@ -5,12 +5,11 @@ from math import ceil
 from api.utils.utils import preprocess_data, make_project_obj, make_text_obj,  create_text_to_audio
 from django.db import transaction
 
-
 class AiParkService:
     @transaction.atomic()
-    def create(self, user: object, datas: dict)-> bool:
-        complete_preprocess = preprocess_data(datas["data"])
-        project_id = make_project_obj(user, datas["project_title"])
+    def create(self, user: object, params: dict)-> bool:
+        complete_preprocess = preprocess_data(params["data"])
+        project_id = make_project_obj(user, params["project_title"])
         make_text_obj(user, project_id, complete_preprocess)
         result = create_text_to_audio(user, project_id) 
         return result
@@ -33,6 +32,29 @@ class AiParkService:
         except Project.DoesNotExist:
             raise NotFoundObject()
     
+    def add(self, user: object, project_id: int, index: int, params: dict)-> bool:    
+        try:
+            if index == None:
+                index = Text.objects.filter(project_id=project_id, project__user=user).count() + 1 
+            complete_preprocess = preprocess_data(params["data"])
+            cnt = len(complete_preprocess)        
+            texts = Text.objects.filter(project_id=project_id, index__gte=index, project__user=user)
+            for text in texts:
+                text.index+=cnt
+                text.save()
+            make_text_obj(user, project_id, complete_preprocess, int(index))
+            result = create_text_to_audio(user, project_id) 
+            return result
+        except Text.DoesNotExist:
+            raise NotFoundObject()
+    
+    def delete(self, user: object, project_id: int)-> dict:
+        try:
+            instance = Project.objects.get(id=project_id, user=user)
+            return instance.delete()
+        except Project.DoesNotExist:
+            raise NotFoundObject()
+
     def update(self, user: object, data: dict, project_id: int, index:int, partial: bool)-> dict:
         try:
             instance = Text.objects.get(project_id=project_id, index=index, project__user=user)
@@ -48,23 +70,8 @@ class AiParkService:
 
     def _perform_update(self, serializer):
         serializer.save()
-
-    def delete(self, user: object, project_id: int)-> dict:
-        try:
-            instance = Project.objects.get(id=project_id, user=user)
-            return instance.delete()
-        except Project.DoesNotExist:
-            raise NotFoundObject()
-
-    def add(self, user: object, project_id: int, datas: dict, index: int)-> bool:    
-        if index == None:
-            index = Text.objects.filter(project_id=project_id, project__user=user).count() + 1 
-        complete_preprocess = preprocess_data(datas["data"])
-        cnt = len(complete_preprocess)        
-        texts = Text.objects.filter(project_id=project_id, index__gte=index, project__user=user)
-        for text in texts:
-            text.index+=cnt
-            text.save()
-        make_text_obj(user, project_id, complete_preprocess, int(index))
-        result = create_text_to_audio(user, project_id) 
-        return result
+    
+    def send_audio_file(self, user: object, project_id: int, index: int):
+        save_point = Project.objects.get(user=user, id=project_id).savedpoint
+        mp3_file = open(f"{save_point}{index}.mp3", "rb")
+        return mp3_file
