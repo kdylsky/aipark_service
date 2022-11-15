@@ -160,3 +160,7 @@ CORS_ALLOW_HEADERS = (
 )
 
 APPEND_SLASH = False
+
+# JWT SECRET
+JWT_KEY = config.token["scret"]
+JWT_EXPIRE_TIME = config.token["expire_sec"]
