@@ -8,19 +8,21 @@ from django.db import transaction
 
 class AiParkService:
     @transaction.atomic()
-    def create(self, datas):
+    def create(self, user, datas):
         complete_preprocess = preprocess_data(datas["data"])
-        project_id = make_project_obj()
-        make_text_obj(project_id,complete_preprocess)
-        result = create_text_to_audio(project_id) 
+        print(complete_preprocess)
+        project_id = make_project_obj(user, datas["project_title"])
+        print(project_id)
+        make_text_obj(user, project_id,complete_preprocess)
+        result = create_text_to_audio(user, project_id) 
         return result
 
-    def get_list(self, project_id, page):
+    def get_list(self, user, project_id, page):
         try:
             page_size = 10
             limit = page_size * int(page)
             offset = limit - page_size
-            obj = Project.objects.get(id=project_id)
+            obj = Project.objects.get(id=project_id, user=user)
             cnt = obj.text_set.count()
             page_text = obj.text_set.all().order_by("index")[offset:limit]
             serailizer = TextModelSerializer(instance=page_text, many=True)
@@ -33,13 +35,13 @@ class AiParkService:
         except Project.DoesNotExist:
             raise NotFoundObject()
     
-    def update(self, data, project_id, index, partial):
+    def update(self,user, data, project_id, index, partial):
         try:
-            instance = Text.objects.get(project_id=project_id, index=index)
+            instance = Text.objects.get(project_id=project_id, index=index, project__user=user)
             serializer = TextModelSerializer(instance, data=data, partial=partial) 
             serializer.is_valid(raise_exception=True)
             self._perform_update(serializer)
-            create_text_to_audio(project_id)
+            create_text_to_audio(user, project_id)
             if getattr(instance, '_prefetched_objects_cache', None):
                 instance._prefetched_objects_cache = {}
             return serializer.data
@@ -49,22 +51,22 @@ class AiParkService:
     def _perform_update(self, serializer):
         serializer.save()
 
-    def delete(self, project_id):
+    def delete(self, user, project_id):
         try:
-            instance = Project.objects.get(id=project_id)
+            instance = Project.objects.get(id=project_id, user=user)
             return instance.delete()
         except Project.DoesNotExist:
             raise NotFoundObject()
 
-    def add_create(self, project_id, datas, index):    
+    def add_create(self, user, project_id, datas, index):    
         if index == None:
-            index = Text.objects.filter(project_id=project_id).count() + 1 
+            index = Text.objects.filter(project_id=project_id, project__user=user).count() + 1 
         complete_preprocess = preprocess_data(datas["data"])
         cnt = len(complete_preprocess)        
-        texts = Text.objects.filter(project_id=project_id, index__gte=index)
+        texts = Text.objects.filter(project_id=project_id, index__gte=index, project__user=user)
         for text in texts:
             text.index+=cnt
             text.save()
-        make_text_obj(project_id, complete_preprocess, int(index))
-        result = create_text_to_audio(project_id) 
+        make_text_obj(user, project_id, complete_preprocess, int(index))
+        result = create_text_to_audio(user, project_id) 
         return result
