@@ -8,16 +8,14 @@ from django.db import transaction
 
 class AiParkService:
     @transaction.atomic()
-    def create(self, user, datas):
+    def create(self, user: object, datas: dict)-> bool:
         complete_preprocess = preprocess_data(datas["data"])
-        print(complete_preprocess)
         project_id = make_project_obj(user, datas["project_title"])
-        print(project_id)
-        make_text_obj(user, project_id,complete_preprocess)
+        make_text_obj(user, project_id, complete_preprocess)
         result = create_text_to_audio(user, project_id) 
         return result
 
-    def get_list(self, user, project_id, page):
+    def get_list(self, user: object, project_id: int, page: str)-> list:
         try:
             page_size = 10
             limit = page_size * int(page)
@@ -35,7 +33,7 @@ class AiParkService:
         except Project.DoesNotExist:
             raise NotFoundObject()
     
-    def update(self,user, data, project_id, index, partial):
+    def update(self, user: object, data: dict, project_id: int, index:int, partial: bool)-> dict:
         try:
             instance = Text.objects.get(project_id=project_id, index=index, project__user=user)
             serializer = TextModelSerializer(instance, data=data, partial=partial) 
@@ -51,14 +49,14 @@ class AiParkService:
     def _perform_update(self, serializer):
         serializer.save()
 
-    def delete(self, user, project_id):
+    def delete(self, user: object, project_id: int)-> dict:
         try:
             instance = Project.objects.get(id=project_id, user=user)
             return instance.delete()
         except Project.DoesNotExist:
             raise NotFoundObject()
 
-    def add_create(self, user, project_id, datas, index):    
+    def add(self, user: object, project_id: int, datas: dict, index: int)-> bool:    
         if index == None:
             index = Text.objects.filter(project_id=project_id, project__user=user).count() + 1 
         complete_preprocess = preprocess_data(datas["data"])
