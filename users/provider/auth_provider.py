@@ -1,19 +1,21 @@
 import re
 import jwt
 import bcrypt
-from datetime import datetime
-from django.conf import settings
-from users.exceptions import FormatEmailError, FormatPasswordError
-from users.models import User
+from datetime           import datetime
+
+from django.conf        import settings
+
+from users.exceptions   import FormatEmailError, FormatPasswordError
+from users.models       import User
 
 class AuthProvider:
     def __init__(self)-> None:
-        self.key = settings.JWT_KEY
+        self.key        = settings.JWT_KEY
         self.expire_sec = settings.JWT_EXPIRE_TIME
     
     def hashpw(self, password: str)-> str:
         password = password.encode("utf8")
-        hashed = bcrypt.hashpw(password, bcrypt.gensalt())
+        hashed   = bcrypt.hashpw(password, bcrypt.gensalt())
         return hashed.decode("utf8")
 
     def check_password(self, password: str, user_password: str)-> bool:
