@@ -1,5 +1,5 @@
 from rest_framework import status
-from exceptions import CustomBaseExecption
+from exceptions     import CustomBaseExecption
 
 class NotFoundObject(CustomBaseExecption):
     def __init__(self):

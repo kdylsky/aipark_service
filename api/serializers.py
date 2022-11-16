@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from api.models import Text
+
+from api.models     import Text
 
 class ProjectSchema(serializers.Serializer):
     """ project 생성 요청 파마리터 """

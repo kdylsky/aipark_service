@@ -1,10 +1,10 @@
-from users.models import User
-from users.serializers import SignUpSchema
+from users.models       import User
+from users.serializers  import SignUpSchema
 
 class SignUpRepo():
     def __init__(self):
-        self.model = User
-        self.serializer =SignUpSchema
+        self.model      = User
+        self.serializer = SignUpSchema
 
     def create(self, email, password):
         serializer = self.serializer(

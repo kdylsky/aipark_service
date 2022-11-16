@@ -1,11 +1,13 @@
-from rest_framework import status
-from rest_framework.decorators import parser_classes
-from rest_framework.parsers import JSONParser
-from rest_framework.views import APIView
-from users.service import SignService, LoginService
-from users.serializers import SignUpSchema, LoginSchema
 from django.http import JsonResponse
-from decorators.execption_handler import execption_hanlder
+
+from rest_framework             import status
+from rest_framework.decorators  import parser_classes
+from rest_framework.parsers     import JSONParser
+from rest_framework.views       import APIView
+
+from users.service                  import SignService, LoginService
+from users.serializers              import SignUpSchema, LoginSchema
+from decorators.execption_handler   import execption_hanlder
 
 signup_service = SignService()
 login_service = LoginService()
