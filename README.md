@@ -257,16 +257,22 @@
     - `path 파라미터`로 받은 프로젝트 아이디에 해당하는 프로젝트객체 삭제
 
 </br>
+</br>
+</br>
+
 
 ## API ENDPOINT
 
-URL|Method|Description|</br>
 
 ### 01.user
 
 
-|"user/signup"|POST|회원가입|</br>
-|"user/login"|POST|로그인&토큰발습|
+URL|Method|Description|
+|------|---|---|
+|"/user/signup"|POST|회원가입|
+|"/user/login"|POST|로그인&토큰발습|
+
+
 
 </br>
 
@@ -274,36 +280,55 @@ URL|Method|Description|</br>
 ### 02.api
 
 #### (1)프로젝트 생성
+
+URL|Method|Description|
+|------|---|---|
 |"/api/project"|POST| 데이터전처리 & 프로젝트객체 & 텍스트객체 & 오디오파일생성|
+
 
 </br>
 
 #### (2)텍스트 조회
-|"/api/project/<int:project_id>"|GET| page에 대한 default=1로 첫번째 페이지 출력|</br>
-|"/api/project/<int:project_id>?page=2"|GET| 2번째 페이지 출력|
+
+URL|Method|Description|
+|------|---|---|
+|"/api/project/\<int:project_id>"|GET| page에 대한 default=1로 첫번째 페이지 출력|
+|"/api/project/\<int:project_id>?page=2"|GET| 2번째 페이지 출력|
 
 - 단 페이지 수 이상의 쿼리파라미터 입력시 `[] 빈 리스트` 출력
 
 </br>
 
 #### (3)텍스트 수정
-|"/api/project/<int:project_id>/index/<int:index>'"|PUT| 프로젝트와 인덱스에 해당하는 텍스트파일 수정|
+
+URL|Method|Description|
+|------|---|---|
+|"/api/project/\<int:project_id>/index/\<int:index>'"|PUT| 프로젝트와 인덱스에 해당하는 텍스트파일 수정|
 
 </br>
 
 #### (4)오디오 파일 전송
-|"/api/project/<int:project_id>/index/<int:index>'"|GET| 프로젝트와 인덱스에 해당하는 텍스트파일 전송|
+
+URL|Method|Description|
+|------|---|---|
+|"/api/project/\<int:project_id>/index/\<int:index>'"|GET| 프로젝트와 인덱스에 해당하는 텍스트파일 전송|
 
 </br>
 
 #### (5)텍스트(오디오)생성/삭제
-|"/api/project/<int:project_id>"|PATCH| default index=1로 맨 앞에 새로운 텍스트 추가|</br>
-|"/api/project/<int:project_id>?index=10"|PATCH| index에 해당하는 위치부토 텍스트 추가|
+
+URL|Method|Description|
+|------|---|---|
+|"/api/project/\<int:project_id>"|PATCH| default index=1로 맨 앞에 새로운 텍스트 추가|
+|"/api/project/\<int:project_id>?index=10"|PATCH| index에 해당하는 위치부토 텍스트 추가|
 
 </br>
 
 #### (6)프로젝트 삭제
-|"/api/project/<int:project_id>"|DELETE| project_id에 해당하는 프로젝트 삭제|
+
+URL|Method|Description|
+|------|---|---|
+|"/api/project/\<int:project_id>"|DELETE| project_id에 해당하는 프로젝트 삭제|
 
 </br>
 
